@@ -26,6 +26,13 @@ export function GameCard({ game }: { game: Game }) {
         <div className="mb-2">
           <Badge variant="outline" className="text-primary border-primary/30 uppercase tracking-widest text-xs">{game.category}</Badge>
         </div>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          <span className="text-[10px] font-display tracking-widest text-green-500 uppercase">Server Online</span>
+        </div>
         <h3 className="text-xl font-display font-bold text-foreground mb-2 neon-text">{game.name}</h3>
         <p className="text-muted-foreground text-sm line-clamp-3 mb-6">{game.description}</p>
         <a href={game.link} target="_blank" rel="noopener noreferrer"
@@ -49,7 +56,13 @@ export function ServerCard({ server }: { server: PrivateServer }) {
             <Badge variant="outline" className="mb-2 text-primary border-primary/30 uppercase tracking-widest text-xs">{server.game}</Badge>
             <h3 className="text-xl font-display font-bold text-foreground neon-text">{server.name}</h3>
           </div>
-          <div className={`w-3 h-3 rounded-full ${server.is_active ? "bg-primary neon-glow" : "bg-muted"}`} />
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="text-[10px] font-display tracking-widest text-green-500 uppercase">Active</span>
+          </div>
         </div>
         <p className="text-muted-foreground text-sm mb-6 min-h-[40px]">{server.description}</p>
         <a href={server.link} target="_blank" rel="noopener noreferrer"
