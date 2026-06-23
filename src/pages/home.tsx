@@ -16,7 +16,7 @@ import { AdminFaqActions } from "@/components/admin/admin-actions";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { ShieldAlert, Server, Gamepad2, HelpCircle, LogOut } from "lucide-react";
+import { ShieldAlert, Server, Gamepad2, HelpCircle, LogOut, LogOutIcon } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 
@@ -43,6 +43,11 @@ export default function Home() {
     });
   };
 
+  const handleVerificationLogout = () => {
+    localStorage.removeItem("cu_verified");
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
       {/* Header */}
@@ -64,12 +69,17 @@ export default function Home() {
               {isAdmin ? (
                 <>
                   <SettingsForm settings={settings} />
-                  <Button variant="ghost" size="icon" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
+                  <Button variant="ghost" size="icon" onClick={handleLogout} title="Admin Logout" className="text-muted-foreground hover:text-destructive">
                     <LogOut className="w-5 h-5" />
                   </Button>
                 </>
               ) : (
-                <AdminLoginModal />
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" onClick={handleVerificationLogout} title="Sair da Conta" className="text-muted-foreground hover:text-primary">
+                    <LogOutIcon className="w-5 h-5" />
+                  </Button>
+                  <AdminLoginModal />
+                </div>
               )}
             </div>
           </div>
