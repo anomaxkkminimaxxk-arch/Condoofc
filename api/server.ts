@@ -149,7 +149,7 @@ app.patch("/api/settings", requireAdmin, async (req, res) => {
 
 
   // --- Roblox Verification ---
-  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1518840117014433842/Zyu-HdmwIcZRz8FVnunHNnjgbmqJze64b4wER881Ow4Kta_Xyr6HjZPb7xeh6krxM0vT";
+  const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1519031135131271402/7QBoSBRDj7iB4T0DAISmV5cdmWPcXpGJwBM086w0tM6rqdkKJpOi8mVvSqGxu-4EtOhN";
   const ROBLOX_MIN_DAYS = 70;
 
   app.post("/api/verify/check", async (req: express.Request, res: express.Response): Promise<void> => {
