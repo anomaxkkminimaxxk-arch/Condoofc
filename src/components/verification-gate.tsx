@@ -69,7 +69,7 @@ import { useState } from "react";
         if (res.ok) {
           setStep("success");
           setTimeout(() => {
-            sessionStorage.setItem("cu_verified", "1");
+            localStorage.setItem("cu_verified", "1");
             onVerified();
           }, 2000);
         } else {
