@@ -23,7 +23,7 @@ import { useState, useEffect } from "react";
     const [checking, setChecking] = useState(true);
 
     useEffect(() => {
-      const already = sessionStorage.getItem("cu_verified");
+      const already = localStorage.getItem("cu_verified");
       if (already === "1") setVerified(true);
       setChecking(false);
     }, []);
